@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"> 
+</head>
+<body>
+<button id="ring1">Ring</button>
+<button id="vol-dn1">-</button>
+<button id="vol-up1">+</button>
+<br>
+<button id="ring2">Ring</button>
+<button id="vol-dn2">-</button>
+<button id="vol-up2">+</button>
+<br>
+<button id="ring3">Ring</button>
+<button id="vol-dn3">-</button>
+<button id="vol-up3">+</button>
+<br>
+<button id="ring4">Ring</button>
+<button id="vol-dn4">-</button>
+<button id="vol-up4">+</button>
+<br>
+<button id="ring5">Ring</button>
+<button id="vol-dn5">-</button>
+<button id="vol-up5">+</button>
+<br>
+<button id="ring6">Ring</button>
+<button id="vol-dn6">-</button>
+<button id="vol-up6">+</button>
+<br>
+<button id="ring7">Ring</button>
+<button id="vol-dn7">-</button>
+<button id="vol-up7">+</button>
+<br>
+<button id="ring8">Ring</button>
+<button id="vol-dn8">-</button>
+<button id="vol-up8">+</button>
+<br>
+<button id="ring9">Ring</button>
+<button id="vol-dn9">-</button>
+<button id="vol-up9">+</button>
+<br>
+<button id="ring10">Ring</button>
+<button id="vol-dn10">-</button>
+<button id="vol-up10">+</button>
+<br>
+<button id="ring11">Ring</button>
+<button id="vol-dn11">-</button>
+<button id="vol-up11">+</button>
+<br>
+<button id="ring12">Ring</button>
+<button id="vol-dn12">-</button>
+<button id="vol-up12">+</button>
+<br>
+<button id="ring13">Ring</button>
+<button id="vol-dn13">-</button>
+<button id="vol-up13">+</button>
+<br>
+<button id="ring14">Ring</button>
+<button id="vol-dn14">-</button>
+<button id="vol-up14">+</button>
+<br>
+<button id="ring15">Ring</button>
+<button id="vol-dn15">-</button>
+<button id="vol-up15">+</button>
+<br>
+<button id="ring16">Ring</button>
+<button id="vol-dn16">-</button>
+<button id="vol-up16">+</button>
+<br>
+<script type="text/javascript">
+"use strict";
+
+function Audiator(our_integer,decay)
+{
+	if(!decay)decay=0.1;
+	var audioCtx = new AudioContext();
+	var oscillator = audioCtx.createOscillator();
+	var gainNode = audioCtx.createGain();
+	oscillator.connect(gainNode);
+	gainNode.connect(audioCtx.destination);
+
+	var initialFreq = 1200/our_integer;
+	var initialVol = 0;//.01;
+
+	oscillator.type = 0; // sine wave
+	oscillator.frequency.value = initialFreq; // value in hertz
+
+	gainNode.gain.value = initialVol;
+	oscillator.start();
+
+	var dn_btn = document.getElementById('vol-dn'+our_integer);
+	dn_btn.onclick = vol_dn;
+
+	var up_btn = document.getElementById('vol-up'+our_integer);
+	up_btn.onclick = vol_up;
+
+	var ring_btn = document.getElementById('ring'+our_integer);
+	ring_btn.onclick = ring;
+
+	var curTimeout=null;
+
+	function ring(){
+	  if(curTimeout){
+	    window.clearTimeout(curTimeout);
+	    curTimeout = false;
+	  }
+	  gainNode.gain.value += gainNode.gain.value > 0.2 ? gainNode.gain.value : 0.1;
+	  vol_decay();
+	}
+	function vol_decay(){
+	  //vol_dn();
+	  if(gainNode.gain.value > 0.005){
+	    gainNode.gain.value -= gainNode.gain.value*decay;
+	    curTimeout = window.setTimeout(vol_decay,200);
+	  }
+	  else{
+	    gainNode.gain.value = 0;
+	    console.log('done');
+	  }
+	}
+
+	function vol_dn(){
+	  if(gainNode.gain.value > 0)
+	    gainNode.gain.value -= 0.001;
+	}
+	function vol_up(){
+	  if(gainNode.gain.value < 0.5)
+	  gainNode.gain.value += 0.001;
+	}
+}
+
+var audiators = [];
+
+for(var i = 1;i<17;i++){
+  audiators.push(new Audiator(i,0.3));
+}
+
+</script>
+</body>
+</html>
